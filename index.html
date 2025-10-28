@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تولیدکننده رمز عبور</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 { color: #1a73e8; margin-bottom: 20px; }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #1557b0; }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f0fe;
+      border-radius: 8px;
+      word-break: break-all;
+      display: none;
+    }
+    #copyBtn { background: #34a853; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>تولید رمز عبور</h1>
+    <input type="number" id="length" placeholder="طول رمز (مثلاً 12)" min="4" max="50" value="12"/>
+    <button onclick="generatePassword()">تولید رمز</button>
+    
+    <div id="result">
+      <strong id="password"></strong>
+      <button id="copyBtn" onclick="copyPassword()">کپی کن</button>
+    </div>
+  </div>
+
+  <script>
+    // اتصال به تلگرام
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    function generatePassword() {
+      const length = document.getElementById('length').value || 12;
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('password').textContent = password;
+      document.getElementById('result').style.display = 'block';
+    }
+
+    function copyPassword() {
+      const password = document.getElementById('password').textContent;
+      navigator.clipboard.writeText(password);
+      tg.showAlert("رمز کپی شد!");
+    }
+
+    // تنظیم تم تلگرام
+    document.body.style.background = tg.backgroundColor;
+  </script>
+</body>
+</html>
