@@ -3,275 +3,532 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ماشین حساب حرفه‌ای</title>
+  <title>Todo & Habit Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
+    :root {
+      --primary: #6c5ce7;
+      --success: #00b894;
+      --danger: #d63031;
+      --warning: #fdcb6e;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2d3436;
+      --border: #dfe6e9;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #2d3436;
+        --card: #353b48;
+        --text: #dfe6e9;
+        --border: #636e72;
+      }
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
+      transition: background 0.3s;
     }
 
-    .calculator {
-      background: #1a1a1a;
-      padding: 24px;
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      width: 100%;
-      max-width: 380px;
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
     }
 
-    .display {
-      background: #000;
-      color: #0f0;
-      font-size: 2.5rem;
-      text-align: right;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-      min-height: 80px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 16px;
     }
 
-    .display .history {
-      font-size: 1rem;
-      color: #666;
+    .header h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
       margin-bottom: 8px;
-      opacity: 0.7;
     }
 
-    .display .current {
-      word-break: break-all;
+    .tabs {
+      display: flex;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+    .tab {
+      flex: 1;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab i {
+      margin-left: 8px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    input[type="text"], input[type="date"], select {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
     }
 
     button {
-      background: #333;
-      color: #fff;
+      background: var(--primary);
+      color: white;
       border: none;
-      font-size: 1.5rem;
-      font-weight: 500;
-      height: 70px;
-      border-radius: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
       cursor: pointer;
+      font-weight: 600;
       transition: all 0.2s;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
     }
 
     button:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      transform: translateY(0);
     }
 
-    button.operator {
-      background: #ff9500;
+    .task-item, .habit-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .task-item:last-child, .habit-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-item.completed {
+      opacity: 0.6;
+      text-decoration: line-through;
+      color: var(--success);
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      margin-left: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .task-meta {
+      font-size: 0.85rem;
+      color: #636e72;
+    }
+
+    .task-actions, .habit-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .btn-edit { background: var(--warning); }
+    .btn-delete { background: var(--danger); }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #636e72;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
       font-weight: bold;
+      color: var(--primary);
     }
 
-    button.equals {
-      background: #28a745;
+    .stat-label {
+      font-size: 0.8rem;
+      color: #636e72;
+      margin-top: 4px;
+    }
+
+    .streak {
+      font-size: 1.8rem;
       font-weight: bold;
+      color: var(--success);
+      text-align: center;
+      margin: 16px 0;
     }
 
-    button.clear {
-      background: #dc3545;
-    }
-
-    button.backspace {
-      background: #6c757d;
-    }
-
-    button.number:hover {
-      background: #444;
-    }
-
-    button.operator:hover {
-      background: #cc7700;
-    }
-
-    button.equals:hover {
-      background: #218838;
-    }
-
-    button.clear:hover {
-      background: #c82333;
-    }
-
-    button.backspace:hover {
-      background: #5a6268;
-    }
-
-    @media (max-width: 400px) {
-      .calculator {
-        padding: 16px;
-      }
-      button {
-        height: 60px;
-        font-size: 1.3rem;
-      }
-      .display {
-        font-size: 2rem;
-        padding: 16px;
+    @media (max-width: 480px) {
+      .stats {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="calculator">
-    <div class="display">
-      <div class="history" id="history"></div>
-      <div class="current" id="current">0</div>
+  <div class="container">
+    <div class="header">
+      <h1>Todo & Habit Tracker</h1>
+      <p>مدیریت وظایف و عادت‌های روزانه</p>
     </div>
 
-    <div class="buttons">
-      <button class="clear" onclick="clearAll()">C</button>
-      <button class="clear" onclick="clearEntry()">CE</button>
-      <button class="backspace" onclick="backspace()">←</button>
-      <button class="operator" onclick="appendOperator('÷')">÷</button>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('todo')"><i class="fas fa-tasks"></i> وظایف</div>
+      <div class="tab" onclick="switchTab('habits')"><i class="fas fa-fire"></i> عادت‌ها</div>
+    </div>
 
-      <button class="number" onclick="appendNumber('7')">7</button>
-      <button class="number" onclick="appendNumber('8')">8</button>
-      <button class="number" onclick="appendNumber('9')">9</button>
-      <button class="operator" onclick="appendOperator('×')">×</button>
+    <!-- Todo Section -->
+    <div id="todo-section">
+      <div class="card">
+        <div class="input-group">
+          <input type="text" id="todo-input" placeholder="وظیفه جدید..." />
+          <select id="todo-category">
+            <option value="کار">کار</option>
+            <option value="شخصی">شخصی</option>
+            <option value="ورزش">ورزش</option>
+            <option value="مطالعه">مطالعه</option>
+          </select>
+          <input type="date" id="todo-due" />
+          <button onclick="addTodo()">+</button>
+        </div>
 
-      <button class="number" onclick="appendNumber('4')">4</button>
-      <button class="number" onclick="appendNumber('5')">5</button>
-      <button class="number" onclick="appendNumber('6')">6</button>
-      <button class="operator" onclick="appendOperator('-')">−</button>
+        <div id="todo-list"></div>
 
-      <button class="number" onclick="appendNumber('1')">1</button>
-      <button class="number" onclick="appendNumber('2')">2</button>
-      <button class="number" onclick="appendNumber('3')">3</button>
-      <button class="operator" onclick="appendOperator('+')">+</button>
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-value" id="total-tasks">0</div>
+            <div class="stat-label">کل وظایف</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completed-tasks">0</div>
+            <div class="stat-label">انجام‌شده</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="pending-tasks">0</div>
+            <div class="stat-label">در انتظار</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <button class="number" onclick="appendNumber('0')" style="grid-column: span 2;">0</button>
-      <button class="number" onclick="appendNumber('.')">.</button>
-      <button class="equals" onclick="calculate()">=</button>
+    <!-- Habits Section -->
+    <div id="habits-section" style="display: none;">
+      <div class="card">
+        <div class="input-group">
+          <input type="text" id="habit-input" placeholder="عادت جدید (مثلاً ورزش صبحگاهی)..." />
+          <button onclick="addHabit()">+</button>
+        </div>
+
+        <div id="habit-list"></div>
+
+        <div class="streak" id="max-streak">استریک: 0 روز</div>
+      </div>
     </div>
   </div>
 
   <script>
-    let currentInput = '0';
-    let operator = null;
-    let previousInput = null;
-    let history = '';
+    // داده‌ها
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
+    let habits = JSON.parse(localStorage.getItem('habits')) || [];
+    let currentTab = 'todo';
 
-    const currentDisplay = document.getElementById('current');
-    const historyDisplay = document.getElementById('history');
+    // DOM
+    const todoList = document.getElementById('todo-list');
+    const habitList = document.getElementById('habit-list');
 
-    function updateDisplay() {
-      currentDisplay.textContent = currentInput;
-      historyDisplay.textContent = history;
+    // تغییر تب
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+      
+      document.getElementById('todo-section').style.display = tab === 'todo' ? 'block' : 'none';
+      document.getElementById('habits-section').style.display = tab === 'habits' ? 'block' : 'none';
+      
+      if (tab === 'todo') renderTodos();
+      if (tab === 'habits') renderHabits();
     }
 
-    function appendNumber(num) {
-      if (currentInput === '0' && num !== '.') {
-        currentInput = num;
-      } else if (num === '.' && currentInput.includes('.')) {
+    // Todo Functions
+    function addTodo() {
+      const input = document.getElementById('todo-input');
+      const category = document.getElementById('todo-category').value;
+      const due = document.getElementById('todo-due').value;
+      
+      if (!input.value.trim()) return;
+
+      const todo = {
+        id: Date.now(),
+        text: input.value.trim(),
+        category,
+        due,
+        completed: false,
+        createdAt: new Date().toISOString()
+      };
+
+      todos.push(todo);
+      saveTodos();
+      input.value = '';
+      document.getElementById('todo-due').value = '';
+      renderTodos();
+    }
+
+    function toggleTodo(id) {
+      todos = todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      saveTodos();
+      renderTodos();
+    }
+
+    function deleteTodo(id) {
+      todos = todos.filter(t => t.id !== id);
+      saveTodos();
+      renderTodos();
+    }
+
+    function renderTodos() {
+      if (todos.length === 0) {
+        todoList.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>وظیفه‌ای ثبت نشده</p></div>`;
+        updateTodoStats();
         return;
+      }
+
+      todoList.innerHTML = todos.map(todo => `
+        <div class="task-item ${todo.completed ? 'completed' : ''}">
+          <div class="checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})">
+            ${todo.completed ? '<i class="fas fa-check"></i>' : ''}
+          </div>
+          <div class="task-content">
+            <div class="task-title">${todo.text}</div>
+            <div class="task-meta">
+              <span>${todo.category}</span>
+              ${todo.due ? ` • تا ${new Date(todo.due).toLocaleDateString('fa-IR')}` : ''}
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="btn-small btn-delete" onclick="deleteTodo(${todo.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+
+      updateTodoStats();
+    }
+
+    function updateTodoStats() {
+      const total = todos.length;
+      const completed = todos.filter(t => t.completed).length;
+      const pending = total - completed;
+
+      document.getElementById('total-tasks').textContent = total;
+      document.getElementById('completed-tasks').textContent = completed;
+      document.getElementById('pending-tasks').textContent = pending;
+    }
+
+    // Habit Functions
+    function addHabit() {
+      const input = document.getElementById('habit-input');
+      if (!input.value.trim()) return;
+
+      const habit = {
+        id: Date.now(),
+        name: input.value.trim(),
+        dates: [] // تاریخ‌هایی که انجام شده
+      };
+
+      habits.push(habit);
+      saveHabits();
+      input.value = '';
+      renderHabits();
+    }
+
+    function toggleHabit(id, dateStr) {
+      const habit = habits.find(h => h.id === id);
+      const index = habit.dates.indexOf(dateStr);
+      
+      if (index > -1) {
+        habit.dates.splice(index, 1);
       } else {
-        currentInput += num;
-      }
-      updateDisplay();
-    }
-
-    function appendOperator(op) {
-      if (currentInput === '' || isNaN(currentInput[currentInput.length - 1])) return;
-
-      if (previousInput !== null && operator) {
-        calculate();
+        habit.dates.push(dateStr);
       }
 
-      previousInput = currentInput;
-      operator = op;
-      history = `${previousInput} ${op}`;
-      currentInput = '';
-      updateDisplay();
+      saveHabits();
+      renderHabits();
     }
 
-    function calculate() {
-      if (!previousInput || !operator || !currentInput) return;
+    function getStreak(habit) {
+      if (habit.dates.length === 0) return 0;
+      
+      const sorted = habit.dates.slice().sort();
+      let streak = 0;
+      let current = new Date();
+      current.setHours(0,0,0,0);
 
-      let prev = parseFloat(previousInput);
-      let curr = parseFloat(currentInput);
-      let result;
-
-      switch (operator) {
-        case '+': result = prev + curr; break;
-        case '−': result = prev - curr; break;
-        case '×': result = prev * curr; break;
-        case '÷': 
-          if (curr === 0) {
-            alert('تقسیم بر صفر مجاز نیست!');
-            clearAll();
-            return;
-          }
-          result = prev / curr; 
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        const date = new Date(sorted[i]);
+        date.setHours(0,0,0,0);
+        const diff = (current - date) / (1000 * 60 * 60 * 24);
+        
+        if (diff === streak) {
+          streak++;
+        } else {
           break;
+        }
+      }
+      return streak;
+    }
+
+    function renderHabits() {
+      if (habits.length === 0) {
+        habitList.innerHTML = `<div class="empty-state"><i class="fas fa-dumbbell"></i><p>عادت جدیدی ثبت کنید</p></div>`;
+        document.getElementById('max-streak').textContent = 'استریک: 0 روز';
+        return;
       }
 
-      result = Math.round(result * 100000000) / 100000000; // جلوگیری از خطای اعشاری
-      currentInput = result.toString();
-      history = `${previousInput} ${operator} ${currentInput} =`;
-      previousInput = null;
-      operator = null;
-      updateDisplay();
+      const today = new Date().toISOString().split('T')[0];
+
+      habitList.innerHTML = habits.map(habit => {
+        const isDone = habit.dates.includes(today);
+        const streak = getStreak(habit);
+        return `
+          <div class="habit-item">
+            <div class="checkbox ${isDone ? 'checked' : ''}" onclick="toggleHabit(${habit.id}, '${today}')">
+              ${isDone ? '<i class="fas fa-check"></i>' : ''}
+            </div>
+            <div class="task-content">
+              <div class="task-title">${habit.name}</div>
+              <div class="task-meta">استریک: ${streak} روز</div>
+            </div>
+            <div class="habit-actions">
+              <button class="btn-small btn-delete" onclick="deleteHabit(${habit.id})"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const maxStreak = Math.max(...habits.map(getStreak), 0);
+      document.getElementById('max-streak').textContent = `بهترین استریک: ${maxStreak} روز`;
     }
 
-    function clearAll() {
-      currentInput = '0';
-      previousInput = null;
-      operator = null;
-      history = '';
-      updateDisplay();
+    function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
+      saveHabits();
+      renderHabits();
     }
 
-    function clearEntry() {
-      currentInput = '0';
-      updateDisplay();
+    // ذخیره‌سازی
+    function saveTodos() {
+      localStorage.setItem('todos', JSON.stringify(todos));
     }
 
-    function backspace() {
-      if (currentInput.length > 1) {
-        currentInput = currentInput.slice(0, -1);
-      } else {
-        currentInput = '0';
-      }
-      updateDisplay();
+    function saveHabits() {
+      localStorage.setItem('habits', JSON.stringify(habits));
     }
 
-    // کلیدهای کیبورد
-    document.addEventListener('keydown', (e) => {
-      if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
-      if (e.key === '.') appendNumber('.');
-      if (e.key === '+') appendOperator('+');
-      if (e.key === '-') appendOperator('−');
-      if (e.key === '*') appendOperator('×');
-      if (e.key === '/') { e.preventDefault(); appendOperator('÷'); }
-      if (e.key === 'Enter' || e.key === '=') calculate();
-      if (e.key === 'Escape') clearAll();
-      if (e.key === 'Backspace') backspace();
+    // کلید Enter
+    document.getElementById('todo-input').addEventListener('keypress', e => {
+      if (e.key === 'Enter') addTodo();
     });
 
-    // شروع اولیه
-    updateDisplay();
+    document.getElementById('habit-input').addEventListener('keypress', e => {
+      if (e.key === 'Enter') addHabit();
+    });
+
+    // شروع
+    renderTodos();
+    renderHabits();
   </script>
 </body>
 </html>
