@@ -1,90 +1,277 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>تولیدکننده رمز عبور</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>ماشین حساب حرفه‌ای</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f2f5;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       padding: 20px;
-      text-align: center;
     }
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h1 { color: #1a73e8; margin-bottom: 20px; }
-    input, button {
+
+    .calculator {
+      background: #1a1a1a;
+      padding: 24px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
+      max-width: 380px;
     }
+
+    .display {
+      background: #000;
+      color: #0f0;
+      font-size: 2.5rem;
+      text-align: right;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      min-height: 80px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .display .history {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    .display .current {
+      word-break: break-all;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
     button {
-      background: #1a73e8;
-      color: white;
+      background: #333;
+      color: #fff;
       border: none;
+      font-size: 1.5rem;
+      font-weight: 500;
+      height: 70px;
+      border-radius: 16px;
       cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    button.operator {
+      background: #ff9500;
       font-weight: bold;
     }
-    button:hover { background: #1557b0; }
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #e8f0fe;
-      border-radius: 8px;
-      word-break: break-all;
-      display: none;
+
+    button.equals {
+      background: #28a745;
+      font-weight: bold;
     }
-    #copyBtn { background: #34a853; margin-top: 10px; }
+
+    button.clear {
+      background: #dc3545;
+    }
+
+    button.backspace {
+      background: #6c757d;
+    }
+
+    button.number:hover {
+      background: #444;
+    }
+
+    button.operator:hover {
+      background: #cc7700;
+    }
+
+    button.equals:hover {
+      background: #218838;
+    }
+
+    button.clear:hover {
+      background: #c82333;
+    }
+
+    button.backspace:hover {
+      background: #5a6268;
+    }
+
+    @media (max-width: 400px) {
+      .calculator {
+        padding: 16px;
+      }
+      button {
+        height: 60px;
+        font-size: 1.3rem;
+      }
+      .display {
+        font-size: 2rem;
+        padding: 16px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>تولید رمز عبور</h1>
-    <input type="number" id="length" placeholder="طول رمز (مثلاً 12)" min="4" max="50" value="12"/>
-    <button onclick="generatePassword()">تولید رمز</button>
-    
-    <div id="result">
-      <strong id="password"></strong>
-      <button id="copyBtn" onclick="copyPassword()">کپی کن</button>
+
+  <div class="calculator">
+    <div class="display">
+      <div class="history" id="history"></div>
+      <div class="current" id="current">0</div>
+    </div>
+
+    <div class="buttons">
+      <button class="clear" onclick="clearAll()">C</button>
+      <button class="clear" onclick="clearEntry()">CE</button>
+      <button class="backspace" onclick="backspace()">←</button>
+      <button class="operator" onclick="appendOperator('÷')">÷</button>
+
+      <button class="number" onclick="appendNumber('7')">7</button>
+      <button class="number" onclick="appendNumber('8')">8</button>
+      <button class="number" onclick="appendNumber('9')">9</button>
+      <button class="operator" onclick="appendOperator('×')">×</button>
+
+      <button class="number" onclick="appendNumber('4')">4</button>
+      <button class="number" onclick="appendNumber('5')">5</button>
+      <button class="number" onclick="appendNumber('6')">6</button>
+      <button class="operator" onclick="appendOperator('-')">−</button>
+
+      <button class="number" onclick="appendNumber('1')">1</button>
+      <button class="number" onclick="appendNumber('2')">2</button>
+      <button class="number" onclick="appendNumber('3')">3</button>
+      <button class="operator" onclick="appendOperator('+')">+</button>
+
+      <button class="number" onclick="appendNumber('0')" style="grid-column: span 2;">0</button>
+      <button class="number" onclick="appendNumber('.')">.</button>
+      <button class="equals" onclick="calculate()">=</button>
     </div>
   </div>
 
   <script>
-    // اتصال به تلگرام
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+    let currentInput = '0';
+    let operator = null;
+    let previousInput = null;
+    let history = '';
 
-    function generatePassword() {
-      const length = document.getElementById('length').value || 12;
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-      let password = "";
-      for (let i = 0; i < length; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    const currentDisplay = document.getElementById('current');
+    const historyDisplay = document.getElementById('history');
+
+    function updateDisplay() {
+      currentDisplay.textContent = currentInput;
+      historyDisplay.textContent = history;
+    }
+
+    function appendNumber(num) {
+      if (currentInput === '0' && num !== '.') {
+        currentInput = num;
+      } else if (num === '.' && currentInput.includes('.')) {
+        return;
+      } else {
+        currentInput += num;
       }
-      document.getElementById('password').textContent = password;
-      document.getElementById('result').style.display = 'block';
+      updateDisplay();
     }
 
-    function copyPassword() {
-      const password = document.getElementById('password').textContent;
-      navigator.clipboard.writeText(password);
-      tg.showAlert("رمز کپی شد!");
+    function appendOperator(op) {
+      if (currentInput === '' || isNaN(currentInput[currentInput.length - 1])) return;
+
+      if (previousInput !== null && operator) {
+        calculate();
+      }
+
+      previousInput = currentInput;
+      operator = op;
+      history = `${previousInput} ${op}`;
+      currentInput = '';
+      updateDisplay();
     }
 
-    // تنظیم تم تلگرام
-    document.body.style.background = tg.backgroundColor;
+    function calculate() {
+      if (!previousInput || !operator || !currentInput) return;
+
+      let prev = parseFloat(previousInput);
+      let curr = parseFloat(currentInput);
+      let result;
+
+      switch (operator) {
+        case '+': result = prev + curr; break;
+        case '−': result = prev - curr; break;
+        case '×': result = prev * curr; break;
+        case '÷': 
+          if (curr === 0) {
+            alert('تقسیم بر صفر مجاز نیست!');
+            clearAll();
+            return;
+          }
+          result = prev / curr; 
+          break;
+      }
+
+      result = Math.round(result * 100000000) / 100000000; // جلوگیری از خطای اعشاری
+      currentInput = result.toString();
+      history = `${previousInput} ${operator} ${currentInput} =`;
+      previousInput = null;
+      operator = null;
+      updateDisplay();
+    }
+
+    function clearAll() {
+      currentInput = '0';
+      previousInput = null;
+      operator = null;
+      history = '';
+      updateDisplay();
+    }
+
+    function clearEntry() {
+      currentInput = '0';
+      updateDisplay();
+    }
+
+    function backspace() {
+      if (currentInput.length > 1) {
+        currentInput = currentInput.slice(0, -1);
+      } else {
+        currentInput = '0';
+      }
+      updateDisplay();
+    }
+
+    // کلیدهای کیبورد
+    document.addEventListener('keydown', (e) => {
+      if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
+      if (e.key === '.') appendNumber('.');
+      if (e.key === '+') appendOperator('+');
+      if (e.key === '-') appendOperator('−');
+      if (e.key === '*') appendOperator('×');
+      if (e.key === '/') { e.preventDefault(); appendOperator('÷'); }
+      if (e.key === 'Enter' || e.key === '=') calculate();
+      if (e.key === 'Escape') clearAll();
+      if (e.key === 'Backspace') backspace();
+    });
+
+    // شروع اولیه
+    updateDisplay();
   </script>
 </body>
 </html>
