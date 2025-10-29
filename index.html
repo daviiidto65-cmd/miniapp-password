@@ -2,11 +2,11 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <!-- مهم: viewport برای موبایل -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Todo & Habit Tracker - تقویم شمسی</title>
+  <title>Todo & Habit Tracker</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    /* همون استایل قبلی — فقط کمی بهینه‌تر */
     :root {
       --primary: #6c5ce7;
       --success: #00b894;
@@ -29,56 +29,267 @@
       }
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    .container { max-width: 100%; margin: 0 auto; padding: 12px; display: flex; flex-direction: column; min-height: 100vh; }
-    .header { text-align: center; margin-bottom: 16px; }
-    .header h1 { font-size: 1.5rem; color: var(--primary); margin-bottom: 4px; }
-    .header p { font-size: 0.9rem; color: #636e72; }
+    html, body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    .tabs { display: flex; background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow); }
-    .tab { flex: 1; padding: 12px 8px; text-align: center; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s; }
-    .tab.active { background: var(--primary); color: white; }
-    .tab i { margin-left: 6px; font-size: 1.1rem; }
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
 
-    .card { background: var(--card); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); flex: 1; }
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-    .input-group { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-    input[type="text"], input[type="date"], select, .jdate-input { flex: 1; min-width: 100px; padding: 12px; border: 2px solid var(--border); border-radius: 12px; font-size: 1rem; background: var(--card); color: var(--text); }
-    input:focus, select:focus, .jdate-input:focus { outline: none; border-color: var(--primary); }
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+      padding: 8px 0;
+    }
 
-    button { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; min-width: 48px; font-size: 1.2rem; }
+    .header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
 
-    .task-item, .habit-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .task-item:last-child, .habit-item:last-child { border-bottom: none; }
-    .task-item.completed { opacity: 0.7; text-decoration: line-through; color: var(--success); }
+    .header p {
+      font-size: 0.9rem;
+      color: #636e72;
+    }
 
-    .checkbox { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 8px; margin-left: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .checkbox.checked { background: var(--success); border-color: var(--success); color: white; }
+    .tabs {
+      display: flex;
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
 
-    .task-content { flex: 1; min-width: 0; }
-    .task-title { font-weight: 600; margin-bottom: 2px; font-size: 1rem; word-break: break-word; }
-    .task-meta { font-size: 0.8rem; color: #636e72; }
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
 
-    .task-actions, .habit-actions { display: flex; gap: 6px; }
-    .btn-small { padding: 6px 8px; font-size: 0.8rem; border-radius: 8px; min-width: 36px; }
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab i {
+      margin-left: 6px;
+      font-size: 1.1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      flex: 1;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"], input[type="date"], select {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+      transition: border 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      min-width: 48px;
+      font-size: 1.2rem;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .task-item, .habit-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-item:last-child, .habit-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-item.completed {
+      opacity: 0.7;
+      text-decoration: line-through;
+      color: var(--success);
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      margin-left: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .task-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      font-size: 1rem;
+      word-break: break-word;
+    }
+
+    .task-meta {
+      font-size: 0.8rem;
+      color: #636e72;
+    }
+
+    .task-actions, .habit-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-small {
+      padding: 6px 8px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      min-width: 36px;
+    }
+
+    .btn-edit { background: var(--warning); color: #000; }
     .btn-delete { background: var(--danger); }
 
-    .empty-state { text-align: center; padding: 32px 16px; color: #636e72; font-size: 0.95rem; }
-    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #636e72;
+      font-size: 0.95rem;
+    }
 
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
-    .stat-card { background: var(--card); padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .stat-value { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
-    .stat-label { font-size: 0.75rem; color: #636e72; margin-top: 2px; }
+    .empty-state i {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
 
-    .streak { font-size: 1.5rem; font-weight: bold; color: var(--success); text-align: center; margin: 16px 0; padding: 8px; background: rgba(0, 184, 148, 0.1); border-radius: 12px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
 
+    .stat-card {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #636e72;
+      margin-top: 2px;
+    }
+
+    .streak {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--success);
+      text-align: center;
+      margin: 16px 0;
+      padding: 8px;
+      background: rgba(0, 184, 148, 0.1);
+      border-radius: 12px;
+    }
+
+    /* موبایل اول */
     @media (max-width: 480px) {
+      .container { padding: 8px; }
+      .header h1 { font-size: 1.4rem; }
+      .tab { padding: 10px 6px; font-size: 0.9rem; }
       .input-group { flex-direction: column; }
-      .stats { grid-template-columns: 1fr; }
+      input, select, button { min-width: 0; }
+      .stats { grid-template-columns: 1fr; gap: 8px; }
+      .stat-card { padding: 10px; }
+      .card { padding: 14px; }
+    }
+
+    @media (max-width: 360px) {
+      .task-actions { flex-direction: column; gap: 4px; }
+      .btn-small { width: 32px; height: 32px; padding: 0; }
     }
   </style>
 </head>
@@ -87,12 +298,12 @@
   <div class="container">
     <div class="header">
       <h1>Todo & Habit Tracker</h1>
-      <p>تقویم شمسی</p>
+      <p>مدیریت وظایف و عادت‌های روزانه</p>
     </div>
 
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('todo')">وظایف</div>
-      <div class="tab" onclick="switchTab('habits')">عادت‌ها</div>
+      <div class="tab active" onclick="switchTab('todo')"><i class="fas fa-tasks"></i> وظایف</div>
+      <div class="tab" onclick="switchTab('habits')"><i class="fas fa-fire"></i> عادت‌ها</div>
     </div>
 
     <!-- Todo Section -->
@@ -106,17 +317,25 @@
             <option value="ورزش">ورزش</option>
             <option value="مطالعه">مطالعه</option>
           </select>
-          <!-- تقویم شمسی دستی -->
-          <input type="text" id="todo-jdate" class="jdate-input" placeholder="1404/08/07" />
+          <input type="date" id="todo-due" />
           <button onclick="addTodo()">+</button>
         </div>
 
         <div id="todo-list"></div>
 
         <div class="stats">
-          <div class="stat-card"><div class="stat-value" id="total-tasks">0</div><div class="stat-label">کل وظایف</div></div>
-          <div class="stat-card"><div class="stat-value" id="completed-tasks">0</div><div class="stat-label">انجام‌شده</div></div>
-          <div class="stat-card"><div class="stat-value" id="pending-tasks">0</div><div class="stat-label">در انتظار</div></div>
+          <div class="stat-card">
+            <div class="stat-value" id="total-tasks">0</div>
+            <div class="stat-label">کل وظایف</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completed-tasks">0</div>
+            <div class="stat-label">انجام‌شده</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="pending-tasks">0</div>
+            <div class="stat-label">در انتظار</div>
+          </div>
         </div>
       </div>
     </div>
@@ -125,76 +344,19 @@
     <div id="habits-section" style="display: none;">
       <div class="card">
         <div class="input-group">
-          <input type="text" id="habit-input" placeholder="عادت جدید..." />
+          <input type="text" id="habit-input" placeholder="عادت جدید (مثلاً ورزش صبحگاهی)..." />
           <button onclick="addHabit()">+</button>
         </div>
 
         <div id="habit-list"></div>
+
         <div class="streak" id="max-streak">استریک: 0 روز</div>
       </div>
     </div>
   </div>
 
   <script>
-    // === توابع تقویم شمسی ===
-    const jalaali = {
-      toJalaali: (gy, gm, gd) => {
-        let jy, jm, jd, g_d_m, l, sal_a, sig, v;
-        if (gy > 979) {
-          jy = 979; gy -= 979;
-        } else {
-          jy = -979; gy += 621;
-        }
-        g_d_m = [0, 31, (jy % 4 === 0 && jy % 100 !== 0 || jy % 400 === 0 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        for (l = 0; l < 13; l++) {
-          v = Math.floor(((l + 1) * 682) / 2816);
-          if (gd < g_d_m[gm - 1] + (gm === 2 ? v : 0)) break;
-          gd -= g_d_m[gm - 1] + (gm === 2 ? v : 0);
-          sal_a = l;
-        }
-        jy += 621 + sal_a;
-        if (gm > 2) jy++;
-        return { jy, jm: gm, jd: gd };
-      },
-
-      jalaaliToString: (j) => {
-        return `${j.jy}/${String(j.jm).padStart(2, '0')}/${String(j.jd).padStart(2, '0')}`;
-      },
-
-      toGregorian: (jy, jm, jd) => {
-        let gy, gm, gd, sal_a, sig, v;
-        if (jy > 979) {
-          gy = 979; jy -= 979;
-        } else {
-          gy = -979; jy += 621;
-        }
-        let g_d_m = [0, 31, (gy % 4 === 0 && gy % 100 !== 0 || gy % 400 === 0 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        for (sal_a = 0; sal_a < 13; sal_a++) {
-          v = Math.floor((sal_a * 682) / 2816);
-          if (jd < (sal_a % 12 === 0 ? 31 : g_d_m[sal_a % 12 + 1]) + v) break;
-          jd -= (sal_a % 12 === 0 ? 31 : g_d_m[sal_a % 12 + 1]) + v;
-        }
-        gy += 621 + Math.floor(sal_a / 12);
-        if (jm > 2) gy++;
-        gm = jm;
-        gd = jd;
-        return new Date(gy, gm - 1, gd);
-      }
-    };
-
-    function todayJalaali() {
-      const now = new Date();
-      return jalaali.toJalaali(now.getFullYear(), now.getMonth() + 1, now.getDate());
-    }
-
-    function formatJalaali(dateStr) {
-      if (!dateStr) return '';
-      const [y, m, d] = dateStr.split('/').map(Number);
-      const j = { jy: y, jm: m, jd: d };
-      return jalaali.jalaaliToString(j);
-    }
-
-    // === داده‌ها ===
+    // داده‌ها
     let todos = JSON.parse(localStorage.getItem('todos')) || [];
     let habits = JSON.parse(localStorage.getItem('habits')) || [];
     let currentTab = 'todo';
@@ -202,24 +364,14 @@
     const todoList = document.getElementById('todo-list');
     const habitList = document.getElementById('habit-list');
 
-    // === تقویم شمسی در ورودی ===
-    document.getElementById('todo-jdate').placeholder = jalaali.jalaaliToString(todayJalaali());
-
-    // اعتبارسنجی ورودی شمسی
-    document.getElementById('todo-jdate').addEventListener('input', function(e) {
-      let val = e.target.value.replace(/\D/g, '');
-      if (val.length > 8) val = val.slice(0, 8);
-      if (val.length >= 4) val = val.slice(0, 4) + '/' + val.slice(4);
-      if (val.length >= 7) val = val.slice(0, 7) + '/' + val.slice(7);
-      e.target.value = val;
-    });
-
     function switchTab(tab) {
       currentTab = tab;
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+      
       document.getElementById('todo-section').style.display = tab === 'todo' ? 'block' : 'none';
       document.getElementById('habits-section').style.display = tab === 'habits' ? 'block' : 'none';
+      
       if (tab === 'todo') renderTodos();
       if (tab === 'habits') renderHabits();
     }
@@ -227,15 +379,15 @@
     function addTodo() {
       const input = document.getElementById('todo-input');
       const category = document.getElementById('todo-category').value;
-      const jdate = document.getElementById('todo-jdate').value;
-
+      const due = document.getElementById('todo-due').value;
+      
       if (!input.value.trim()) return;
 
       const todo = {
         id: Date.now(),
         text: input.value.trim(),
         category,
-        jdate, // ذخیره تاریخ شمسی
+        due,
         completed: false,
         createdAt: new Date().toISOString()
       };
@@ -243,7 +395,7 @@
       todos.push(todo);
       saveTodos();
       input.value = '';
-      document.getElementById('todo-jdate').value = '';
+      document.getElementById('todo-due').value = '';
       renderTodos();
     }
 
@@ -275,7 +427,7 @@
             <div class="task-title">${todo.text}</div>
             <div class="task-meta">
               <span>${todo.category}</span>
-              ${todo.jdate ? ` • تا ${formatJalaali(todo.jdate)}` : ''}
+              ${todo.due ? ` • تا ${new Date(todo.due).toLocaleDateString('fa-IR')}` : ''}
             </div>
           </div>
           <div class="task-actions">
@@ -291,12 +443,12 @@
       const total = todos.length;
       const completed = todos.filter(t => t.completed).length;
       const pending = total - completed;
+
       document.getElementById('total-tasks').textContent = total;
       document.getElementById('completed-tasks').textContent = completed;
       document.getElementById('pending-tasks').textContent = pending;
     }
 
-    // === عادت‌ها با تاریخ شمسی ===
     function addHabit() {
       const input = document.getElementById('habit-input');
       if (!input.value.trim()) return;
@@ -304,7 +456,7 @@
       const habit = {
         id: Date.now(),
         name: input.value.trim(),
-        dates: [] // تاریخ‌های شمسی
+        dates: []
       };
 
       habits.push(habit);
@@ -313,15 +465,14 @@
       renderHabits();
     }
 
-    function toggleHabit(id) {
-      const today = jalaali.jalaaliToString(todayJalaali());
+    function toggleHabit(id, dateStr) {
       const habit = habits.find(h => h.id === id);
-      const index = habit.dates.indexOf(today);
+      const index = habit.dates.indexOf(dateStr);
       
       if (index > -1) {
         habit.dates.splice(index, 1);
       } else {
-        habit.dates.push(today);
+        habit.dates.push(dateStr);
       }
 
       saveHabits();
@@ -330,17 +481,16 @@
 
     function getStreak(habit) {
       if (habit.dates.length === 0) return 0;
+      
       const sorted = habit.dates.slice().sort();
       let streak = 0;
-      const today = todayJalaali();
+      let current = new Date();
+      current.setHours(0,0,0,0);
 
       for (let i = sorted.length - 1; i >= 0; i--) {
-        const [y, m, d] = sorted[i].split('/').map(Number);
-        const date = { jy: y, jm: m, jd: d };
-        const greg = jalaali.toGregorian(date.jy, date.jm, date.jd);
-        const todayGreg = new Date();
-        todayGreg.setHours(0,0,0,0);
-        const diff = Math.floor((todayGreg - greg) / (1000 * 60 * 60 * 24));
+        const date = new Date(sorted[i]);
+        date.setHours(0,0,0,0);
+        const diff = (current - date) / (1000 * 60 * 60 * 24);
         
         if (diff === streak) {
           streak++;
@@ -358,14 +508,14 @@
         return;
       }
 
-      const today = jalaali.jalaaliToString(todayJalaali());
+      const today = new Date().toISOString().split('T')[0];
 
       habitList.innerHTML = habits.map(habit => {
         const isDone = habit.dates.includes(today);
         const streak = getStreak(habit);
         return `
           <div class="habit-item">
-            <div class="checkbox ${isDone ? 'checked' : ''}" onclick="toggleHabit(${habit.id})">
+            <div class="checkbox ${isDone ? 'checked' : ''}" onclick="toggleHabit(${habit.id}, '${today}')">
               ${isDone ? '<i class="fas fa-check"></i>' : ''}
             </div>
             <div class="task-content">
@@ -389,9 +539,15 @@
       renderHabits();
     }
 
-    function saveTodos() { localStorage.setItem('todos', JSON.stringify(todos)); }
-    function saveHabits() { localStorage.setItem('habits', JSON.stringify(habits)); }
+    function saveTodos() {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
 
+    function saveHabits() {
+      localStorage.setItem('habits', JSON.stringify(habits));
+    }
+
+    // کلید Enter
     ['todo-input', 'habit-input'].forEach(id => {
       document.getElementById(id).addEventListener('keypress', e => {
         if (e.key === 'Enter') {
